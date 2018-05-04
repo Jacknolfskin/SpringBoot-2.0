@@ -6,7 +6,11 @@
 	<groupId>com.example.personal</groupId>
 	<artifactId>SpringBoot-2.0</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<modules>
+		<module>RestfulApi</module>
+		<module>Elasticsearch</module>
+	</modules>
+	<packaging>pom</packaging>
 
 	<name>SpringBoot-2.0</name>
 	<description>Demo project for Spring Boot</description>
@@ -45,6 +49,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>
