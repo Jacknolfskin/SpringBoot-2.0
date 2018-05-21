@@ -1,4 +1,4 @@
-package com.personal;
+package com.personal.Elasticsearch;
 
 import com.personal.dao.ArticleSearchRepository;
 import com.personal.entity.Article;
