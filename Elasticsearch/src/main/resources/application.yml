@@ -16,6 +16,11 @@ spring:
             local: false
             repositories:
                 enable: true
+    elasticsearch:
+      jest:
+       uris: http://192.168.226.133:9200
+       connection-timeout:
+       read-timeout: 5000s
 
 
 spring.datasource:
