@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldGreen(%msg%n)"/>
+    <appender name="KAFKA" class="com.personal.asyncsendmail.config.KafkaAppender">
+    </appender>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <root level="info">
+        <appender-ref ref="KAFKA"/>
+        <appender-ref ref="console"/>
+    </root>
+    // 关闭每次显示kafka设置信息
+    <logger name="org.apache.kafka" level="OFF"/>
+</configuration>
