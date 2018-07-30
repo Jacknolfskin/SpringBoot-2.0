@@ -52,20 +52,20 @@ public class Consumer {
                     try {
                         for (MessageExt messageExt : list) {
 
-                            System.out.println("messageExt: " + messageExt);//输出消息内容
-
                             String messageBody = new String(messageExt.getBody(), "utf-8");
 
-                            System.out.println("消费响应：Msg: " + messageExt.getMsgId() + ",msgBody: " + messageBody);//输出消息内容
+                            //输出消息内容
+                            System.out.println("消费响应：Msg: " + messageExt.getMsgId() + ",msgBody: " + messageBody);
 
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return ConsumeConcurrentlyStatus.RECONSUME_LATER; //稍后再试
+                        //稍后再试
+                        return ConsumeConcurrentlyStatus.RECONSUME_LATER;
                     }
-                    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS; //消费成功
+                    //消费成功
+                    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                 }
-
 
             });
             consumer.start();
