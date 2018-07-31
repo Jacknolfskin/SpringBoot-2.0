@@ -6,7 +6,6 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 import javax.annotation.PostConstruct;
@@ -15,7 +14,7 @@ import java.util.List;
 /**
  * 描述: 消息有序生产者
  **/
-@Component
+//@Component
 public class ProducerOrder {
 
     /**
@@ -60,7 +59,7 @@ public class ProducerOrder {
                         int index = id % mqs.size();
                         return mqs.get(index);
                     }
-                }, 1);
+                }, 1);//这里写死让消息发送到同一个queue
                 System.out.println("发送响应：MsgId:" + result.getMsgId() + "，发送状态:" + result.getSendStatus());
             }
             stop.stop();
@@ -74,3 +73,9 @@ public class ProducerOrder {
 }
 /*一般消息是通过轮询所有队列来发送的（负载均衡策略），顺序消息可以根据业务，比如说订单号相同的消息发送到同一个队列，
 这边在代码中指定了1，1处这个值相同的获取到的队列是同一个队列。*/
+
+/**
+ * 生产者在发送消息的时候，进行了orderId进行哈希，让同一个orderId每次发送到同一个队列，保证同一个队列单个线程消费肯定是有序的。
+ * 通过ReblanceImp的lockAll方法每隔一段时间定时锁住当前消费端消费的队列,设置本地队列ProcessQueue的locked属性为true。保证broker中的每个消息队列只对应一个消费端。
+ * 消费端也是通过锁，保证每个ProcessQueue只有一个线程消费
+ */
