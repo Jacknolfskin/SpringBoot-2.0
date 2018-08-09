@@ -14,7 +14,7 @@
 .idea
 *.iws
 *.iml
-.mvn
+#.mvn
 *.ipr
 
 ### NetBeans ###
