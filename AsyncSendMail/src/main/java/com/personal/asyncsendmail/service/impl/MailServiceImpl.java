@@ -35,7 +35,8 @@ public class MailServiceImpl implements MailService {
         message.setSubject(mail.getSubject());
         message.setText(mail.getContent());
         mailSender.send(message);
-        logger.info("邮件已发送：{}", mail.getEmail());
+        logger.info("邮件已发送" +
+                "：{}", mail.getEmail());
     }
 
 
