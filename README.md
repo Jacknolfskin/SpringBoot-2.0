@@ -1,5 +1,5 @@
 # 基于SpringBoot2.0集成示例
-1. 合并ElasticSearch 搜索引擎项目
+1. 合并ElasticSearch搜索引擎项目
 2. SpringBoot2.0 RestfulApi风格代码示例
 3. 使用队列异步发送邮件及Kafka异步存储日志
 4. RocketMQ使用案例
