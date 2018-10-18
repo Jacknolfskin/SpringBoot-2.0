@@ -8,11 +8,12 @@ import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.converts.MySqlTypeConvert;
 import com.baomidou.mybatisplus.generator.config.rules.DbType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import com.example.codegenerateor.util.EnvUtil;
 
 /**
  * @Auther: feihu5
  * @Date: 2018/10/17 14:51
- * @Description:
+ * @Description: Mybatis-Plus版本
  */
 public class CodeGenerator {
 
@@ -38,10 +39,10 @@ public class CodeGenerator {
         DataSourceConfig dsc = new DataSourceConfig();
         dsc.setDbType(DbType.MYSQL);
         dsc.setTypeConvert(new MySqlTypeConvert());
-        dsc.setUrl("jdbc:mysql://192.168.57.101:3306/mea_vrsp_biz?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false&allowMultiQueries=true&useSSL=false");
+        dsc.setUrl("jdbc:mysql://****:3306/mea_vrsp_biz?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false&allowMultiQueries=true&useSSL=false");
         dsc.setDriverName("com.mysql.jdbc.Driver");
-        dsc.setUsername("root");
-        dsc.setPassword("meap");
+        dsc.setUsername("***");
+        dsc.setPassword("***");
         mpg.setDataSource(dsc);
 
         // 包配置
@@ -51,7 +52,6 @@ public class CodeGenerator {
         // 这里是控制器包名，默认web
         pc.setController("controller");
         mpg.setPackageInfo(pc);
-
 
         // 策略配置
         StrategyConfig strategy = new StrategyConfig();

@@ -1,4 +1,4 @@
-package com.example.codegenerateor;
+package com.example.codegenerateor.util;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
