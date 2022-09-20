@@ -1,2 +1,16 @@
+server:
+  port: 8088
 api:
   order: http://127.0.0.1:8080/api/v1
+spring:
+  jackson:
+    # json 序列化排除值为 null 的属性
+    default-property-inclusion: non_null
+content-security:
+  secret-id: 05c3b4e21a7025d75d7cf4197fbeb6a6
+  secret-key: 5cbfef87c066d4704925dad785231619
+  api-url: http://as.dun.163.com/v2/mediasolution/submit
+  callback-url: http://4e17532d.cpolar.cn/content/security/callback
+  version: v2
+  title: 融媒体解决方案的标题
+

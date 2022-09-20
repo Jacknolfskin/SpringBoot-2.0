@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--bootstrap-->
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!--jqueryUI-->
+    <link href="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.theme.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.theme.min.css" rel="stylesheet">
+    <!--openlayers-->
+    <link href="https://cdn.bootcss.com/openlayers/4.6.5/ol-debug.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script src="https://cdn.bootcss.com/openlayers/4.6.5/ol-debug.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            border: 1px solid red;
+        }
+
+        #tools {
+            position: fixed;
+            left: 20px;
+            top: 40px;
+            z-index: 99999;
+            background: #fff;
+        }
+
+        #tools select {
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+<div id="tools">
+    <select name="typeSelect" id="typeSelect">
+        <option value="Point" data="poi" selected="selected">t_poi</option>
+        <option value="LineString" data="river">t_river</option>
+        <option value="Polygon" data="build">t_build</option>
+    </select>
+</div>
+<div id="map"></div>
+<div id="dialog" title="保存对话框">
+    <form>
+        <div class="form-group">
+            <label for="inputName">名称：</label>
+            <input type="email" class="form-control" name="name" id="inputName" placeholder="名称">
+        </div>
+        <div class="form-group">
+            <label for="selectType">类型：</label>
+            <select class="form-control" name="type" id="selectType" placeholder="类型">
+                <option value="1" selected="selected">点</option>
+                <option value="2">线</option>
+                <option value="3">面</option>
+            </select>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var map, draw, snap, baseLayer, baseSource, tempLayer;
+
+        baseSource = new ol.source.VectorTile({
+            format: new ol.format.MVT(),
+            url: 'http://localhost:8084/walkgis-draw/vectortile/vt/{z}/{x}/{-y}.mvt?CRS=EPSG:4326',
+            projection: "EPSG:4326",
+            extent: ol.proj.get("EPSG:4326").getExtent(),
+            tileSize: 256,
+            maxZoom: 21,
+            minZoom: 0,
+            wrapX: true
+        });
+        baseLayer = new ol.layer.VectorTile({
+            renderMode: "image",
+            preload: 12,
+            source: baseSource,
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: 'rgba(255, 0, 0, 0.2)'
+                }),
+                stroke: new ol.style.Stroke({
+                    color: '#ff0000',
+                    width: 2
+                }),
+                image: new ol.style.Circle({
+                    radius: 7,
+                    fill: new ol.style.Fill({
+                        color: '#ff0000'
+                    })
+                })
+            })
+        })
+        tempLayer = new ol.layer.Vector({
+            source: new ol.source.Vector()
+        })
+
+        function addInteractions() {
+            draw = new ol.interaction.Draw({
+                source: tempLayer.getSource(),
+                type: typeSelect.value,
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255, 255, 255, 0.2)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#ffcc33',
+                        width: 2
+                    }),
+                    image: new ol.style.Circle({
+                        radius: 7,
+                        fill: new ol.style.Fill({
+                            color: '#ffcc33'
+                        })
+                    })
+                })
+            });
+            draw.on('drawend', function (target) {
+                $("#dialog").dialog({
+                    title: '保存对话框',
+                    dialogClass: "no-close",
+                    width: 600,
+                    height: 300,
+                    modal: true,
+                    buttons: {
+                        '确  定': function () {
+                            tempLayer.getSource().clear();
+                            var attrs = $(this).find('form').serializeArray();
+                            $(this).find('form')[0].reset();
+                            attrs.forEach(function (item) {
+                                target.feature.set(item.name, item.value);
+                            })
+
+                            var route = $("#typeSelect option:selected").attr("data")
+                            $.ajax({
+                                url: 'http://localhost:8084/walkgis-draw/' + route + "/save",
+                                type: "GET",
+                                data: {
+                                    feature: new ol.format.GeoJSON().writeFeature(target.feature)
+                                }
+                            }).done(function (re) {
+                                if (re > 0) {
+                                    var extent = target.feature.getGeometry().getExtent().join(',')
+                                    $.ajax({
+                                        url: 'http://localhost:8084/walkgis-draw/vectortile/clearCache/vtdemo?CRS=EPSG:4326',
+                                        type: "GET",
+                                        data: {
+                                            extent: extent
+                                        }
+                                    }).done(function (re) {
+                                        baseLayer.getSource().clear();
+                                        baseLayer.getSource().dispatchEvent("change");
+                                    })
+                                }
+                            })
+                            $(this).dialog('destroy');
+                        },
+                        '取  消': function () {
+                            tempLayer.getSource().clear();
+                            $(this).dialog('destroy');
+                        }
+                    }
+                });
+            })
+            snap = new ol.interaction.Snap({
+                source: tempLayer.getSource()
+            });
+
+            map.addInteraction(draw);
+            map.addInteraction(snap);
+        }
+
+        $("#typeSelect").change(function () {
+            map.removeInteraction(draw);
+            map.removeInteraction(snap);
+            addInteractions();
+        });
+
+        map = new ol.Map({
+            target: "map",
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM(),
+                    projection: "EPSG:4326"
+                }),
+                baseLayer,
+                new ol.layer.Tile({
+                    source: new ol.source.TileDebug({
+                        projection: "EPSG:4326",
+                        tileGrid: ol.tilegrid.createXYZ({
+                            tileSize: [256, 256],
+                            minZoom: 0,
+                            maxZoom: 18,
+                            extent: ol.proj.get("EPSG:4326").getExtent()
+                        }),
+                        wrapX: true
+                    }),
+                    projection: 'EPSG:4326'
+                }),
+                tempLayer
+            ],
+            view: new ol.View({
+                center: [100, 25],
+                projection: "EPSG:4326",
+                zoom: 10
+            }),
+            projection: "EPSG:4326",
+        })
+
+        addInteractions();
+    })
+
+</script>
+</body>
+</html>

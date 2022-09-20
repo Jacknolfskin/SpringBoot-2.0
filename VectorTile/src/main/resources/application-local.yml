@@ -1,0 +1,46 @@
+server:
+  port: 8084
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    context-path: /${spring.application.name}
+spring:
+  profiles: local
+  datasource:
+    gis:
+      url: jdbc:postgresql://localhost:5432/gis
+      username: postgres
+      password: postgres
+      driver-class-name: org.postgresql.Driver
+      sql-script-encoding: utf-8
+      type: com.zaxxer.hikari.HikariDataSource
+      hikari:
+        connection-timeout: 30000
+        idle-timeout: 60000
+        max-lifetime: 1800000
+        maximum-pool-size: 60
+        minimum-idle: 0
+  application:
+    name: walkgis-draw
+
+beetlsql:
+  ds:
+    gis:
+      sqlPath: /sql
+      basePackage: cn.com.walkgis.microdraw.walkgisdraw.dao
+      nameConversion: org.beetl.sql.core.UnderlinedNameConversion
+      daoSuffix: Dao
+      dbStyle: org.beetl.sql.core.db.PostgresStyle
+  mutiple:
+    datasource: gis
+beetl-beetlsql: dev=false
+
+region:
+  split: 0.010986328125,0.00274658203125
+
+# 存放缓存文件的地址
+cache:
+  vector-tile-geoserver-path: E:\Data\tiles\vt-geoserver
+  maxz: 18
+  minz: 1
+
